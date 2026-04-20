@@ -1,0 +1,334 @@
+basePath: /
+definitions:
+  domain.AuthResponse:
+    properties:
+      accessToken:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+    type: object
+  domain.ErrorResponse:
+    properties:
+      error:
+        example: Bad Request
+        type: string
+      message:
+        example: Bad request message
+        type: string
+      statusCode:
+        example: 400
+        type: integer
+    type: object
+  domain.LoginDTO:
+    properties:
+      email:
+        example: ivan@example.com
+        type: string
+      password:
+        example: secret123
+        type: string
+    type: object
+  domain.MessageResponse:
+    properties:
+      message:
+        example: Operation successful
+        type: string
+    type: object
+  domain.RegisterDTO:
+    properties:
+      email:
+        example: ivan@example.com
+        type: string
+      name:
+        example: Иван Иванов
+        type: string
+      password:
+        example: secret123
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+    type: object
+  domain.UserProfile:
+    properties:
+      avatar:
+        example: https://storage.yandexcloud.net/bucket/avatars/user.webp
+        type: string
+      email:
+        example: ivan@example.com
+        type: string
+      name:
+        example: Иван Иванов
+        type: string
+      roles:
+        example:
+        - STUDENT
+        items:
+          type: string
+        type: array
+    type: object
+host: localhost:4242
+info:
+  contact: {}
+  description: Educational timetable and schedule API with flat lessons, Redis caching,
+    and S3 storage.
+  title: Schedule API
+  version: "1.0"
+paths:
+  /api/auth/avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload avatar image with optional cropData to S3
+      parameters:
+      - description: Avatar image file
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      - description: JSON cropData {x, y, width, height}
+        in: formData
+        name: cropData
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Upload user avatar
+      tags:
+      - user
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT access token
+      parameters:
+      - description: Login payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: User login
+      tags:
+      - auth
+  /api/auth/logout:
+    post:
+      description: Clear refresh token cookie
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+      summary: User logout
+      tags:
+      - auth
+  /api/auth/profile:
+    get:
+      description: Return profile of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.UserProfile'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - user
+  /api/auth/refresh:
+    post:
+      description: Refresh JWT access token using cookie
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.AuthResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Refresh token
+      tags:
+      - auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user and return JWT access token
+      parameters:
+      - description: Registration payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RegisterDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+  /api/auth/role:
+    post:
+      description: Add or update role for specified user ID
+      parameters:
+      - description: User UUID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Role name
+        in: query
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user role (Admin only)
+      tags:
+      - user
+  /api/user/avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload avatar image with optional cropData to S3
+      parameters:
+      - description: Avatar image file
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      - description: JSON cropData {x, y, width, height}
+        in: formData
+        name: cropData
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Upload user avatar
+      tags:
+      - user
+  /api/user/profile:
+    get:
+      description: Return profile of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.UserProfile'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - user
+  /api/user/role:
+    post:
+      description: Add or update role for specified user ID
+      parameters:
+      - description: User UUID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Role name
+        in: query
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user role (Admin only)
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and the JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
