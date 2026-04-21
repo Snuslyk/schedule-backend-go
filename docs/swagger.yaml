@@ -6,6 +6,12 @@ definitions:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         type: string
     type: object
+  domain.CreateGroupDTO:
+    properties:
+      name:
+        example: ИС-21
+        type: string
+    type: object
   domain.ErrorResponse:
     properties:
       error:
@@ -17,6 +23,15 @@ definitions:
       statusCode:
         example: 400
         type: integer
+    type: object
+  domain.Group:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name:
+        example: ИС-21
+        type: string
     type: object
   domain.LoginDTO:
     properties:
@@ -245,6 +260,162 @@ paths:
       summary: Update user role (Admin only)
       tags:
       - user
+  /api/group:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateGroupDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create group
+      tags:
+      - group
+  /api/group/bulk:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: List of groups
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/domain.CreateGroupDTO'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Bulk create groups
+      tags:
+      - group
+  /api/group/id/{id}:
+    delete:
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Delete group by ID
+      tags:
+      - group
+    get:
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Get group by ID
+      tags:
+      - group
+  /api/group/name/{name}:
+    delete:
+      parameters:
+      - description: Group Name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Delete group by name
+      tags:
+      - group
+    get:
+      parameters:
+      - description: Group Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Get group by name
+      tags:
+      - group
   /api/user/avatar:
     post:
       consumes:
