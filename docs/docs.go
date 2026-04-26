@@ -520,6 +520,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/owner": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "owner"
+                ],
+                "summary": "Search groups and teachers by name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max items (default 5, max 10)",
+                        "name": "quantity",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Owner"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/subject": {
             "get": {
                 "produces": [
@@ -1040,6 +1082,38 @@ const docTemplate = `{
                     "example": "Operation successful"
                 }
             }
+        },
+        "domain.Owner": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "ИС-21"
+                },
+                "type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.OwnerType"
+                        }
+                    ],
+                    "example": "group"
+                }
+            }
+        },
+        "domain.OwnerType": {
+            "type": "string",
+            "enum": [
+                "group",
+                "teacher"
+            ],
+            "x-enum-varnames": [
+                "OwnerTypeGroup",
+                "OwnerTypeTeacher"
+            ]
         },
         "domain.RegisterDTO": {
             "type": "object",
