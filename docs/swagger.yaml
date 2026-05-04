@@ -12,6 +12,52 @@ definitions:
         example: ИС-21
         type: string
     type: object
+  domain.CreateLessonDTO:
+    properties:
+      classroom:
+        example: "301"
+        type: string
+      dayOfWeek:
+        example: 0
+        type: integer
+      groupId:
+        example: 1
+        type: integer
+      isAvailable:
+        example: true
+        type: boolean
+      slotLength:
+        example: 1
+        type: integer
+      slotNumber:
+        example: 1
+        type: integer
+      subjectId:
+        example: 1
+        type: integer
+      teacherId:
+        example: 1
+        type: integer
+      weekType:
+        allOf:
+        - $ref: '#/definitions/domain.WeekType'
+        example: BOTH
+    type: object
+  domain.CreateSlotDTO:
+    properties:
+      dayOfWeek:
+        example: 0
+        type: integer
+      end:
+        example: 600
+        type: integer
+      slotNumber:
+        example: 1
+        type: integer
+      start:
+        example: 510
+        type: integer
+    type: object
   domain.CreateSubjectDTO:
     properties:
       name:
@@ -44,6 +90,40 @@ definitions:
       name:
         example: ИС-21
         type: string
+    type: object
+  domain.Lesson:
+    properties:
+      classroom:
+        example: "301"
+        type: string
+      dayOfWeek:
+        example: 0
+        type: integer
+      groupId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      isAvailable:
+        example: true
+        type: boolean
+      slotLength:
+        example: 1
+        type: integer
+      slotNumber:
+        example: 1
+        type: integer
+      subjectId:
+        example: 1
+        type: integer
+      teacherId:
+        example: 1
+        type: integer
+      weekType:
+        allOf:
+        - $ref: '#/definitions/domain.WeekType'
+        example: BOTH
     type: object
   domain.LoginDTO:
     properties:
@@ -97,6 +177,24 @@ definitions:
           type: string
         type: array
     type: object
+  domain.Slot:
+    properties:
+      dayOfWeek:
+        example: 0
+        type: integer
+      end:
+        example: 600
+        type: integer
+      id:
+        example: 1
+        type: integer
+      slotNumber:
+        example: 1
+        type: integer
+      start:
+        example: 510
+        type: integer
+    type: object
   domain.Subject:
     properties:
       id:
@@ -133,6 +231,18 @@ definitions:
           type: string
         type: array
     type: object
+  domain.WeekType:
+    enum:
+    - EVEN
+    - ODD
+    - BOTH
+    - OTHER
+    type: string
+    x-enum-varnames:
+    - WeekTypeEven
+    - WeekTypeOdd
+    - WeekTypeBoth
+    - WeekTypeOther
 host: localhost:4242
 info:
   contact: {}
@@ -467,6 +577,83 @@ paths:
       summary: Get group by name
       tags:
       - group
+  /api/lesson:
+    post:
+      consumes:
+      - application/json
+      description: Create a lesson with group_id and teacher_id foreign keys
+      parameters:
+      - description: Lesson payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateLessonDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Lesson'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create flat lesson
+      tags:
+      - lesson
+  /api/lesson/{id}:
+    delete:
+      parameters:
+      - description: Lesson ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Delete lesson by ID
+      tags:
+      - lesson
+  /api/lesson/bulk:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: List of lessons
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/domain.CreateLessonDTO'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Bulk create lessons
+      tags:
+      - lesson
   /api/owner:
     get:
       parameters:
@@ -494,6 +681,77 @@ paths:
       summary: Search groups and teachers by name
       tags:
       - owner
+  /api/slot:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Slot'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: List bell timetable slots
+      tags:
+      - slot
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Slot payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateSlotDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Slot'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create bell slot
+      tags:
+      - slot
+  /api/slot/bulk:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: List of slots
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/domain.CreateSlotDTO'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Bulk create bell slots
+      tags:
+      - slot
   /api/subject:
     get:
       produces:

@@ -514,6 +514,125 @@
                 }
             }
         },
+        "/api/lesson": {
+            "post": {
+                "description": "Create a lesson with group_id and teacher_id foreign keys",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lesson"
+                ],
+                "summary": "Create flat lesson",
+                "parameters": [
+                    {
+                        "description": "Lesson payload",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateLessonDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Lesson"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/lesson/bulk": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lesson"
+                ],
+                "summary": "Bulk create lessons",
+                "parameters": [
+                    {
+                        "description": "List of lessons",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.CreateLessonDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/lesson/{id}": {
+            "delete": {
+                "tags": [
+                    "lesson"
+                ],
+                "summary": "Delete lesson by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Lesson ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/owner": {
             "get": {
                 "produces": [
@@ -544,6 +663,116 @@
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/domain.Owner"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/slot": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slot"
+                ],
+                "summary": "List bell timetable slots",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Slot"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slot"
+                ],
+                "summary": "Create bell slot",
+                "parameters": [
+                    {
+                        "description": "Slot payload",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateSlotDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Slot"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/slot/bulk": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slot"
+                ],
+                "summary": "Bulk create bell slots",
+                "parameters": [
+                    {
+                        "description": "List of slots",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.CreateSlotDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
                             }
                         }
                     },
@@ -1007,6 +1236,72 @@
                 }
             }
         },
+        "domain.CreateLessonDTO": {
+            "type": "object",
+            "properties": {
+                "classroom": {
+                    "type": "string",
+                    "example": "301"
+                },
+                "dayOfWeek": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "groupId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "slotLength": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "slotNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "subjectId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "teacherId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "weekType": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.WeekType"
+                        }
+                    ],
+                    "example": "BOTH"
+                }
+            }
+        },
+        "domain.CreateSlotDTO": {
+            "type": "object",
+            "properties": {
+                "dayOfWeek": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "end": {
+                    "type": "integer",
+                    "example": 600
+                },
+                "slotNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "start": {
+                    "type": "integer",
+                    "example": 510
+                }
+            }
+        },
         "domain.CreateSubjectDTO": {
             "type": "object",
             "properties": {
@@ -1052,6 +1347,55 @@
                 "name": {
                     "type": "string",
                     "example": "ИС-21"
+                }
+            }
+        },
+        "domain.Lesson": {
+            "type": "object",
+            "properties": {
+                "classroom": {
+                    "type": "string",
+                    "example": "301"
+                },
+                "dayOfWeek": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "groupId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "slotLength": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "slotNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "subjectId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "teacherId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "weekType": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.WeekType"
+                        }
+                    ],
+                    "example": "BOTH"
                 }
             }
         },
@@ -1132,6 +1476,31 @@
                 }
             }
         },
+        "domain.Slot": {
+            "type": "object",
+            "properties": {
+                "dayOfWeek": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "end": {
+                    "type": "integer",
+                    "example": 600
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "slotNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "start": {
+                    "type": "integer",
+                    "example": 510
+                }
+            }
+        },
         "domain.Subject": {
             "type": "object",
             "properties": {
@@ -1183,6 +1552,21 @@
                     ]
                 }
             }
+        },
+        "domain.WeekType": {
+            "type": "string",
+            "enum": [
+                "EVEN",
+                "ODD",
+                "BOTH",
+                "OTHER"
+            ],
+            "x-enum-varnames": [
+                "WeekTypeEven",
+                "WeekTypeOdd",
+                "WeekTypeBoth",
+                "WeekTypeOther"
+            ]
         }
     },
     "securityDefinitions": {
