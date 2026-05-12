@@ -681,6 +681,274 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/schedule": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Create academic period",
+                "parameters": [
+                    {
+                        "description": "Period payload",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateScheduleDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateScheduleDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedule/bulk": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Bulk create academic periods",
+                "parameters": [
+                    {
+                        "description": "List of periods",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.CreateScheduleDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedule/day/group": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Get group schedule for a day",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date YYYY-MM-DD",
+                        "name": "day",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.DayScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedule/day/teacher": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Get teacher schedule for a day (direct SELECT)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Teacher ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date YYYY-MM-DD",
+                        "name": "day",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.DayScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedule/week/group": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Get group schedule for a week (cached in Redis)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date YYYY-MM-DD",
+                        "name": "week",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.WeekScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedule/week/teacher": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Get teacher schedule for a week (cached in Redis)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Teacher ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date YYYY-MM-DD",
+                        "name": "week",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.WeekScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/slot": {
             "get": {
                 "produces": [
@@ -1287,6 +1555,31 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.CreateScheduleDTO": {
+            "type": "object",
+            "properties": {
+                "end": {
+                    "type": "string",
+                    "example": "2026-12-31T00:00:00Z"
+                },
+                "groupId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "mode": {
+                    "type": "string",
+                    "example": "PARITY"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "1 Семестр"
+                },
+                "start": {
+                    "type": "string",
+                    "example": "2026-09-01T00:00:00Z"
+                }
+            }
+        },
         "domain.CreateSlotDTO": {
             "type": "object",
             "properties": {
@@ -1323,6 +1616,23 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Иванов Иван Иванович"
+                }
+            }
+        },
+        "domain.DayScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "lessons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.LessonResponse"
+                    }
+                },
+                "slots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.SlotResponse"
+                    }
                 }
             }
         },
@@ -1405,6 +1715,41 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.LessonResponse": {
+            "type": "object",
+            "properties": {
+                "classroom": {
+                    "type": "string",
+                    "example": "301"
+                },
+                "groupName": {
+                    "type": "string",
+                    "example": "ИС-21"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "slotLength": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "slotNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "subject": {
+                    "$ref": "#/definitions/domain.NamedObject"
+                },
+                "teacher": {
+                    "$ref": "#/definitions/domain.NamedObject"
+                }
+            }
+        },
         "domain.LoginDTO": {
             "type": "object",
             "properties": {
@@ -1424,6 +1769,15 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Operation successful"
+                }
+            }
+        },
+        "domain.NamedObject": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Математика"
                 }
             }
         },
@@ -1507,6 +1861,19 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.SlotResponse": {
+            "type": "object",
+            "properties": {
+                "end": {
+                    "type": "integer",
+                    "example": 600
+                },
+                "start": {
+                    "type": "integer",
+                    "example": 510
+                }
+            }
+        },
         "domain.Subject": {
             "type": "object",
             "properties": {
@@ -1556,6 +1923,25 @@ const docTemplate = `{
                     "example": [
                         "STUDENT"
                     ]
+                }
+            }
+        },
+        "domain.WeekScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.DayScheduleResponse"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "example": "EVEN"
+                },
+                "weekType": {
+                    "type": "string",
+                    "example": "even"
                 }
             }
         },

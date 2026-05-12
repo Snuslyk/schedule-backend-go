@@ -43,6 +43,24 @@ definitions:
         - $ref: '#/definitions/domain.WeekType'
         example: BOTH
     type: object
+  domain.CreateScheduleDTO:
+    properties:
+      end:
+        example: "2026-12-31T00:00:00Z"
+        type: string
+      groupId:
+        example: 1
+        type: integer
+      mode:
+        example: PARITY
+        type: string
+      name:
+        example: 1 Семестр
+        type: string
+      start:
+        example: "2026-09-01T00:00:00Z"
+        type: string
+    type: object
   domain.CreateSlotDTO:
     properties:
       dayOfWeek:
@@ -69,6 +87,17 @@ definitions:
       name:
         example: Иванов Иван Иванович
         type: string
+    type: object
+  domain.DayScheduleResponse:
+    properties:
+      lessons:
+        items:
+          $ref: '#/definitions/domain.LessonResponse'
+        type: array
+      slots:
+        items:
+          $ref: '#/definitions/domain.SlotResponse'
+        type: array
     type: object
   domain.ErrorResponse:
     properties:
@@ -125,6 +154,31 @@ definitions:
         - $ref: '#/definitions/domain.WeekType'
         example: BOTH
     type: object
+  domain.LessonResponse:
+    properties:
+      classroom:
+        example: "301"
+        type: string
+      groupName:
+        example: ИС-21
+        type: string
+      id:
+        example: 1
+        type: integer
+      isAvailable:
+        example: true
+        type: boolean
+      slotLength:
+        example: 1
+        type: integer
+      slotNumber:
+        example: 1
+        type: integer
+      subject:
+        $ref: '#/definitions/domain.NamedObject'
+      teacher:
+        $ref: '#/definitions/domain.NamedObject'
+    type: object
   domain.LoginDTO:
     properties:
       email:
@@ -138,6 +192,12 @@ definitions:
     properties:
       message:
         example: Operation successful
+        type: string
+    type: object
+  domain.NamedObject:
+    properties:
+      name:
+        example: Математика
         type: string
     type: object
   domain.Owner:
@@ -195,6 +255,15 @@ definitions:
         example: 510
         type: integer
     type: object
+  domain.SlotResponse:
+    properties:
+      end:
+        example: 600
+        type: integer
+      start:
+        example: 510
+        type: integer
+    type: object
   domain.Subject:
     properties:
       id:
@@ -230,6 +299,19 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  domain.WeekScheduleResponse:
+    properties:
+      days:
+        items:
+          $ref: '#/definitions/domain.DayScheduleResponse'
+        type: array
+      type:
+        example: EVEN
+        type: string
+      weekType:
+        example: even
+        type: string
     type: object
   domain.WeekType:
     enum:
@@ -681,6 +763,180 @@ paths:
       summary: Search groups and teachers by name
       tags:
       - owner
+  /api/schedule:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Period payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateScheduleDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.CreateScheduleDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create academic period
+      tags:
+      - schedule
+  /api/schedule/bulk:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: List of periods
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/domain.CreateScheduleDTO'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Bulk create academic periods
+      tags:
+      - schedule
+  /api/schedule/day/group:
+    get:
+      parameters:
+      - description: Group ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Date YYYY-MM-DD
+        in: query
+        name: day
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.DayScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Get group schedule for a day
+      tags:
+      - schedule
+  /api/schedule/day/teacher:
+    get:
+      parameters:
+      - description: Teacher ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Date YYYY-MM-DD
+        in: query
+        name: day
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.DayScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Get teacher schedule for a day (direct SELECT)
+      tags:
+      - schedule
+  /api/schedule/week/group:
+    get:
+      parameters:
+      - description: Group ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Date YYYY-MM-DD
+        in: query
+        name: week
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.WeekScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Get group schedule for a week (cached in Redis)
+      tags:
+      - schedule
+  /api/schedule/week/teacher:
+    get:
+      parameters:
+      - description: Teacher ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Date YYYY-MM-DD
+        in: query
+        name: week
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.WeekScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Get teacher schedule for a week (cached in Redis)
+      tags:
+      - schedule
   /api/slot:
     get:
       produces:
