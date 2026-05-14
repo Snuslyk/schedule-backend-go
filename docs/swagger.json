@@ -675,6 +675,117 @@
                 }
             }
         },
+        "/api/replace/{group}": {
+            "post": {
+                "description": "Create replace and invalidate cache in Redis for group and teacher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "replace"
+                ],
+                "summary": "Create replace for group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group name",
+                        "name": "group",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date in this week YYYY-MM-DD",
+                        "name": "thisWeek",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Replace payload",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateReplaceDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Replace"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/replace/{group}/bulk": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "replace"
+                ],
+                "summary": "Bulk create replaces for group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group name",
+                        "name": "group",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date in this week YYYY-MM-DD",
+                        "name": "thisWeek",
+                        "in": "query"
+                    },
+                    {
+                        "description": "List of replaces",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.CreateReplaceDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/schedule": {
             "post": {
                 "consumes": [
@@ -1549,6 +1660,39 @@
                 }
             }
         },
+        "domain.CreateReplaceDTO": {
+            "type": "object",
+            "properties": {
+                "classroom": {
+                    "type": "string",
+                    "example": "404"
+                },
+                "date": {
+                    "type": "string",
+                    "example": "2026-09-07T00:00:00Z"
+                },
+                "groupId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "slotNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "subjectId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "teacherId": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "domain.CreateScheduleDTO": {
             "type": "object",
             "properties": {
@@ -1827,6 +1971,43 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "domain.Replace": {
+            "type": "object",
+            "properties": {
+                "classroom": {
+                    "type": "string",
+                    "example": "404"
+                },
+                "date": {
+                    "type": "string",
+                    "example": "2026-09-07T00:00:00Z"
+                },
+                "groupId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "slotNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "subjectId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "teacherId": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },

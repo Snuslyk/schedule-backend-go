@@ -43,6 +43,30 @@ definitions:
         - $ref: '#/definitions/domain.WeekType'
         example: BOTH
     type: object
+  domain.CreateReplaceDTO:
+    properties:
+      classroom:
+        example: "404"
+        type: string
+      date:
+        example: "2026-09-07T00:00:00Z"
+        type: string
+      groupId:
+        example: 1
+        type: integer
+      isAvailable:
+        example: true
+        type: boolean
+      slotNumber:
+        example: 1
+        type: integer
+      subjectId:
+        example: 1
+        type: integer
+      teacherId:
+        example: 1
+        type: integer
+    type: object
   domain.CreateScheduleDTO:
     properties:
       end:
@@ -236,6 +260,33 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  domain.Replace:
+    properties:
+      classroom:
+        example: "404"
+        type: string
+      date:
+        example: "2026-09-07T00:00:00Z"
+        type: string
+      groupId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      isAvailable:
+        example: true
+        type: boolean
+      slotNumber:
+        example: 1
+        type: integer
+      subjectId:
+        example: 1
+        type: integer
+      teacherId:
+        example: 1
+        type: integer
     type: object
   domain.Slot:
     properties:
@@ -763,6 +814,79 @@ paths:
       summary: Search groups and teachers by name
       tags:
       - owner
+  /api/replace/{group}:
+    post:
+      consumes:
+      - application/json
+      description: Create replace and invalidate cache in Redis for group and teacher
+      parameters:
+      - description: Group name
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: Date in this week YYYY-MM-DD
+        in: query
+        name: thisWeek
+        type: string
+      - description: Replace payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateReplaceDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Replace'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create replace for group
+      tags:
+      - replace
+  /api/replace/{group}/bulk:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group name
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: Date in this week YYYY-MM-DD
+        in: query
+        name: thisWeek
+        type: string
+      - description: List of replaces
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/domain.CreateReplaceDTO'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Bulk create replaces for group
+      tags:
+      - replace
   /api/schedule:
     post:
       consumes:
