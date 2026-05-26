@@ -71,23 +71,32 @@ func main() {
 	lessonRepo := postgres.NewLessonRepository(db)
 	replaceRepo := postgres.NewReplaceRepository(db)
 	ownerRepo := postgres.NewOwnerRepository(db)
+	orgRepo := postgres.NewOrganizationRepository(db)
+	wtRepo := postgres.NewWeekTemplateRepository(db)
+	dayRepo := postgres.NewDayRepository(db)
 
 	authService := service.NewAuthService(userRepo, avatarService, cfg)
 	scheduleService := service.NewScheduleService(lessonRepo, replaceRepo, slotRepo, periodRepo, groupRepo, teacherRepo, scheduleCache)
 	replaceService := service.NewReplaceService(replaceRepo, groupRepo, scheduleCache)
 	ownerService := service.NewOwnerService(ownerRepo)
+	orgService := service.NewOrganizationService(orgRepo)
+	wtService := service.NewWeekTemplateService(wtRepo, groupRepo, scheduleCache)
+	dayService := service.NewDayService(dayRepo)
 
 	router := handler.SetupRouter(handler.RouterParams{
-		Config:          cfg,
-		AuthHandler:     handler.NewAuthHandler(authService, avatarService),
-		GroupHandler:    handler.NewGroupHandler(groupRepo),
-		TeacherHandler:  handler.NewTeacherHandler(teacherRepo),
-		SubjectHandler:  handler.NewSubjectHandler(subjectRepo),
-		SlotHandler:     handler.NewSlotHandler(slotRepo),
-		LessonHandler:   handler.NewLessonHandler(lessonRepo),
-		ReplaceHandler:  handler.NewReplaceHandler(replaceService),
-		ScheduleHandler: handler.NewScheduleHandler(scheduleService),
-		OwnerHandler:    handler.NewOwnerHandler(ownerService),
+		Config:              cfg,
+		AuthHandler:         handler.NewAuthHandler(authService, avatarService),
+		GroupHandler:        handler.NewGroupHandler(groupRepo),
+		TeacherHandler:      handler.NewTeacherHandler(teacherRepo),
+		SubjectHandler:      handler.NewSubjectHandler(subjectRepo),
+		SlotHandler:         handler.NewSlotHandler(slotRepo),
+		LessonHandler:       handler.NewLessonHandler(lessonRepo),
+		ReplaceHandler:      handler.NewReplaceHandler(replaceService),
+		ScheduleHandler:     handler.NewScheduleHandler(scheduleService),
+		OwnerHandler:        handler.NewOwnerHandler(ownerService),
+		OrganizationHandler: handler.NewOrganizationHandler(orgService),
+		WeekTemplateHandler: handler.NewWeekTemplateHandler(wtService),
+		DayHandler:          handler.NewDayHandler(dayService),
 	})
 
 	server := &http.Server{

@@ -30,6 +30,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./migrations/000001_init.up.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
       - ./migrations/000002_slots_and_flat_lessons.up.sql:/docker-entrypoint-initdb.d/02_flat.sql:ro
+      - ./migrations/000003_week_template_day_org.up.sql:/docker-entrypoint-initdb.d/03_template.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d schedule"]
       interval: 5s

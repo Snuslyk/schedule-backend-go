@@ -280,6 +280,78 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/day/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "day"
+                ],
+                "summary": "Get day by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Day ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Day"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "day"
+                ],
+                "summary": "Delete day by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Day ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/group": {
             "post": {
                 "consumes": [
@@ -632,6 +704,90 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/organization": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Create a new organization",
+                "parameters": [
+                    {
+                        "description": "Organization payload",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateOrganizationDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Organization"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/organization/bulk": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Create multiple organizations",
+                "parameters": [
+                    {
+                        "description": "List of organizations",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.CreateOrganizationDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/domain.ErrorResponse"
                         }
@@ -1600,6 +1756,142 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/week-template/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "week-template"
+                ],
+                "summary": "Create a week template for a group",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Week template payload",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateWeekTemplateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.WeekTemplate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "week-template"
+                ],
+                "summary": "Delete a week template by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Week Template ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/week-template/{id}/bulk": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "week-template"
+                ],
+                "summary": "Create multiple week templates for a group",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "List of week templates",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.CreateWeekTemplateDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.WeekTemplate"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1609,6 +1901,65 @@ const docTemplate = `{
                 "accessToken": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+            }
+        },
+        "domain.CreateDayDTO": {
+            "type": "object",
+            "properties": {
+                "lessons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.CreateDayLessonDTO"
+                    }
+                },
+                "slots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.CreateDaySlotDTO"
+                    }
+                }
+            }
+        },
+        "domain.CreateDayLessonDTO": {
+            "type": "object",
+            "properties": {
+                "classroom": {
+                    "type": "string",
+                    "example": "405"
+                },
+                "isAvailable": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "slotLength": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "slotNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "subjectId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "teacherId": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "domain.CreateDaySlotDTO": {
+            "type": "object",
+            "properties": {
+                "end": {
+                    "type": "integer",
+                    "example": 520
+                },
+                "start": {
+                    "type": "integer",
+                    "example": 480
                 }
             }
         },
@@ -1663,6 +2014,19 @@ const docTemplate = `{
                         }
                     ],
                     "example": "BOTH"
+                }
+            }
+        },
+        "domain.CreateOrganizationDTO": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Лицей №1"
+                },
+                "shortName": {
+                    "type": "string",
+                    "example": "Л1"
                 }
             }
         },
@@ -1760,6 +2124,54 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Иванов Иван Иванович"
+                }
+            }
+        },
+        "domain.CreateWeekTemplateDTO": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.CreateDayDTO"
+                    }
+                },
+                "type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.WeekType"
+                        }
+                    ],
+                    "example": "EVEN"
+                }
+            }
+        },
+        "domain.Day": {
+            "type": "object",
+            "properties": {
+                "dayIndex": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "lessons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.LessonResponse"
+                    }
+                },
+                "slots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.SlotResponse"
+                    }
+                },
+                "weekTemplateId": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1922,6 +2334,23 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Математика"
+                }
+            }
+        },
+        "domain.Organization": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Лицей №1"
+                },
+                "shortName": {
+                    "type": "string",
+                    "example": "Л1"
                 }
             }
         },
@@ -2123,6 +2552,33 @@ const docTemplate = `{
                 "weekType": {
                     "type": "string",
                     "example": "even"
+                }
+            }
+        },
+        "domain.WeekTemplate": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Day"
+                    }
+                },
+                "groupId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.WeekType"
+                        }
+                    ],
+                    "example": "EVEN"
                 }
             }
         },

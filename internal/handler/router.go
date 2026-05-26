@@ -17,9 +17,12 @@ type RouterParams struct {
 	SubjectHandler  *SubjectHandler
 	SlotHandler     *SlotHandler
 	LessonHandler   *LessonHandler
-	ReplaceHandler  *ReplaceHandler
-	ScheduleHandler *ScheduleHandler
-	OwnerHandler    *OwnerHandler
+	ReplaceHandler      *ReplaceHandler
+	ScheduleHandler     *ScheduleHandler
+	OwnerHandler        *OwnerHandler
+	OrganizationHandler *OrganizationHandler
+	WeekTemplateHandler *WeekTemplateHandler
+	DayHandler          *DayHandler
 }
 
 func SetupRouter(p RouterParams) *chi.Mux {
@@ -124,6 +127,22 @@ func SetupRouter(p RouterParams) *chi.Mux {
 
 		api.Route("/owner", func(o chi.Router) {
 			o.Get("/", p.OwnerHandler.FindByName)
+		})
+
+		api.Route("/organization", func(org chi.Router) {
+			org.Post("/", p.OrganizationHandler.Create)
+			org.Post("/bulk", p.OrganizationHandler.CreateMany)
+		})
+
+		api.Route("/week-template", func(wt chi.Router) {
+			wt.Post("/{id}", p.WeekTemplateHandler.Create)
+			wt.Post("/{id}/bulk", p.WeekTemplateHandler.CreateMany)
+			wt.Delete("/{id}", p.WeekTemplateHandler.DeleteByID)
+		})
+
+		api.Route("/day", func(d chi.Router) {
+			d.Get("/{id}", p.DayHandler.GetByID)
+			d.Delete("/{id}", p.DayHandler.DeleteByID)
 		})
 	})
 

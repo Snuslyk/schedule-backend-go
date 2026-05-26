@@ -6,6 +6,47 @@ definitions:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         type: string
     type: object
+  domain.CreateDayDTO:
+    properties:
+      lessons:
+        items:
+          $ref: '#/definitions/domain.CreateDayLessonDTO'
+        type: array
+      slots:
+        items:
+          $ref: '#/definitions/domain.CreateDaySlotDTO'
+        type: array
+    type: object
+  domain.CreateDayLessonDTO:
+    properties:
+      classroom:
+        example: "405"
+        type: string
+      isAvailable:
+        example: true
+        type: boolean
+      slotLength:
+        example: 2
+        type: integer
+      slotNumber:
+        example: 1
+        type: integer
+      subjectId:
+        example: 1
+        type: integer
+      teacherId:
+        example: 1
+        type: integer
+    type: object
+  domain.CreateDaySlotDTO:
+    properties:
+      end:
+        example: 520
+        type: integer
+      start:
+        example: 480
+        type: integer
+    type: object
   domain.CreateGroupDTO:
     properties:
       name:
@@ -42,6 +83,15 @@ definitions:
         allOf:
         - $ref: '#/definitions/domain.WeekType'
         example: BOTH
+    type: object
+  domain.CreateOrganizationDTO:
+    properties:
+      name:
+        example: Лицей №1
+        type: string
+      shortName:
+        example: Л1
+        type: string
     type: object
   domain.CreateReplaceDTO:
     properties:
@@ -111,6 +161,37 @@ definitions:
       name:
         example: Иванов Иван Иванович
         type: string
+    type: object
+  domain.CreateWeekTemplateDTO:
+    properties:
+      days:
+        items:
+          $ref: '#/definitions/domain.CreateDayDTO'
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/domain.WeekType'
+        example: EVEN
+    type: object
+  domain.Day:
+    properties:
+      dayIndex:
+        example: 0
+        type: integer
+      id:
+        example: 1
+        type: integer
+      lessons:
+        items:
+          $ref: '#/definitions/domain.LessonResponse'
+        type: array
+      slots:
+        items:
+          $ref: '#/definitions/domain.SlotResponse'
+        type: array
+      weekTemplateId:
+        example: 1
+        type: integer
     type: object
   domain.DayScheduleResponse:
     properties:
@@ -222,6 +303,18 @@ definitions:
     properties:
       name:
         example: Математика
+        type: string
+    type: object
+  domain.Organization:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Лицей №1
+        type: string
+      shortName:
+        example: Л1
         type: string
     type: object
   domain.Owner:
@@ -363,6 +456,23 @@ definitions:
       weekType:
         example: even
         type: string
+    type: object
+  domain.WeekTemplate:
+    properties:
+      days:
+        items:
+          $ref: '#/definitions/domain.Day'
+        type: array
+      groupId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      type:
+        allOf:
+        - $ref: '#/definitions/domain.WeekType'
+        example: EVEN
     type: object
   domain.WeekType:
     enum:
@@ -554,6 +664,53 @@ paths:
       summary: Update user role (Admin only)
       tags:
       - user
+  /api/day/{id}:
+    delete:
+      parameters:
+      - description: Day ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Delete day by ID
+      tags:
+      - day
+    get:
+      parameters:
+      - description: Day ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Day'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Get day by ID
+      tags:
+      - day
   /api/group:
     post:
       consumes:
@@ -787,6 +944,60 @@ paths:
       summary: Bulk create lessons
       tags:
       - lesson
+  /api/organization:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Organization payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateOrganizationDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Organization'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create a new organization
+      tags:
+      - organization
+  /api/organization/bulk:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: List of organizations
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/domain.CreateOrganizationDTO'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create multiple organizations
+      tags:
+      - organization
   /api/owner:
     get:
       parameters:
@@ -1409,6 +1620,95 @@ paths:
       summary: Update user role (Admin only)
       tags:
       - user
+  /api/week-template/{id}:
+    delete:
+      parameters:
+      - description: Week Template ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Delete a week template by ID
+      tags:
+      - week-template
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Week template payload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateWeekTemplateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.WeekTemplate'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create a week template for a group
+      tags:
+      - week-template
+  /api/week-template/{id}/bulk:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: List of week templates
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/domain.CreateWeekTemplateDTO'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              $ref: '#/definitions/domain.WeekTemplate'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Create multiple week templates for a group
+      tags:
+      - week-template
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and the JWT token.
